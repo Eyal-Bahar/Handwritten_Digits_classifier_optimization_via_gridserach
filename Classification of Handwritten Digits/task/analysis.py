@@ -37,8 +37,8 @@ class Loader:
 
         # summary :
         print(f"Classes: {np.unique(self.y_test)}")
-        print(f"Features' shape: ({n}, {m})")
-        print(f"Target's shape: ({n},)")
+        # print(f"Features' shape: ({n}, {m})")
+        # print(f"Target's shape: ({n},)")
         print(f"min: {train_min}", f"max: {train_max}")
 
     def small_sample(self, rows=6000):
@@ -204,12 +204,13 @@ if __name__ == '__main__':
     normed_x_test = transformer.transform(x_test)
 
     ## Stage 3 Run through models
-    # scores = run_evaluate_models(x_train, y_train, x_test, y_test)
+    scores = run_evaluate_models(x_train, y_train, x_test, y_test) # does nothing it was only for checking
 
     ## Stage 4 Run with normed data and compare
-    # scores_from_normed = run_evaluate_models(normed_x_train, y_train, normed_x_test, y_test, print_in_run=0)
-    # scores_from_normed = mark_scores_names_as_normed(scores_from_normed)
-    # check_if_normed_helped_report(scores, scores_from_normed)
+    scores_from_normed = run_evaluate_models(normed_x_train, y_train, normed_x_test, y_test, print_in_run=0)
+    scores_from_normed = mark_scores_names_as_normed(scores_from_normed)
+    check_if_normed_helped_report(scores, scores_from_normed)
+
     # best ones are:
     #     KNeighborsClassifier
     #     RandomForestClassifier
@@ -230,18 +231,13 @@ if __name__ == '__main__':
 
     rfc_gs.fit(normed_x_train, y_train)
 
-    #
-    # knn_gs.best_estimator_ = "KNeighborsClassifier(n_neighbors=4, weights='distance')"
-    # acc_score = 0.9577777777777777
     print("K-nearest neighbours algorithm")
     print(f"best estimator: {knn_gs.best_estimator_}")
     pred = knn_gs.best_estimator_.predict(normed_x_test)
     acc_score = accuracy_score(y_test, pred)
     print(f"accuracy: {round(acc_score,3)}\n")
 
-    # rfc_gs.best_estimator_ = "RandomForestClassifier(class_weight=None, max_features='auto',
-    #                        n_estimators=100, random_state=40)"
-    # acc_score = 0.9577777777777777
+
     print("Random forest algorithm")
     print(f"best estimator: {rfc_gs.best_estimator_}")
     pred = rfc_gs.best_estimator_.predict(normed_x_test)
