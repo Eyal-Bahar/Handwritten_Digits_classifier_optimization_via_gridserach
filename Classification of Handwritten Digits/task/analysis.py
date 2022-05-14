@@ -4,6 +4,14 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import pandas as pd
+from dataclasses import dataclass, field
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+import operator
 
 class Loader:
     """ load raw data and reshape"""
@@ -57,13 +65,85 @@ class Splitter:
         print(pd.DataFrame(y_train).value_counts(normalize=True))
 
 
+@dataclass
+class BaseRunner:
+    "Base runnner without explicit implementation for a model"
+    model: ...
+    train_feats: ...
+    train_target: ...
+    test_feats: ...
+    test_target: ...
+    score = 0
+
+    def __post_init__(self):
+        pass
+
+    def train(self):
+        self.model.fit(self.train_feats, self.train_target)
+
+    def predict_test(self):
+        """"""
+        test_predictions = self.model.predict(self.test_feats)
+        return test_predictions
+
+    def eval_(self, y_true, y_pred):
+        """ accuracy from sklearn"""
+        return accuracy_score(y_true, y_pred)
+
+    def set_score(self):
+        """ test predictions and compare with y_true (test_target)"""
+        self.score = self.eval_(self.test_target,  self.predict_test())
+
+    def print_results(self):
+        print(f"model: {self.model}\nAccuracy: {round(self.score,3)}\n")
+
+
+def fit_predict_eval(runner: BaseRunner):
+    runner.fit()
+    runner.set_score()
+    runner.print_results()
+
+
+def print_best(scores):
+    key = max(scores.items(), key=operator.itemgetter(1))[0]
+    model_name = f"{key}".split("(")[0] + "()"
+    print(f"The answer to the question: {model_name} - {round(scores[key],3)}")
+
+
+
+def stage_3(train_feats, train_target,  test_feats, test_target):
+    RANDOM_STATE = 40
+    models = [KNeighborsClassifier(),
+              DecisionTreeClassifier(random_state=RANDOM_STATE),
+              LogisticRegression(solver="liblinear"),
+              RandomForestClassifier(random_state=RANDOM_STATE)]
+
+    scores = {}
+    for model in models:
+        # model = KNeighborsClassifier() # temp
+        runner = BaseRunner(model,
+                            train_feats,
+                            train_target,
+                            test_feats,
+                            test_target)
+        runner.train()
+        runner.set_score()
+        runner.print_results()
+
+        scores.update({f"{model}": runner.score})
+    print_best(scores)
+
 if __name__ == '__main__':
     ##
     loader = Loader()
     splitter = Splitter()
-    ##
+    ##from sklearn.datasets import load_iris
+
     loader.x_train = loader.set_shape(loader.x_train)
     x_train, y_train = loader.small_sample()
     ##
     x_train, x_test, y_train, y_test = Splitter.train_test_hanlder(x_train, y_train)
-    Splitter.stage_two_report(x_train, x_test, y_train, y_test)
+    # Splitter.stage_two_report(x_train, x_test, y_train, y_test)
+    stage_3(x_train, y_train, x_test, y_test)
+
+
