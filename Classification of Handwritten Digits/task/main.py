@@ -1,5 +1,6 @@
-""" This scripts is used to find an optimal model and its hyper paramteres from a selection of models.
-While having the flexability to support many models, it was tested on the following models:
+""" This module can be used to find an optimal model and its hyper paramteres from a selection of models.
+
+It has the flexability to support many models, but it was tested on the following models:
     KNeighborsClassifier,     DecisionTreeClassifier,
     LogisticRegression ,    RandomForestClassifier.
 
@@ -12,20 +13,20 @@ Then, it pefroms a grid search to find the optinal model
 The project was based on a project in the Jetbrains Intro to Machine Learning Track.
 """
 
-import tensorflow as tf
+import operator
+from dataclasses import dataclass, field
+
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
-import pandas as pd
-from dataclasses import dataclass, field
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
+import tensorflow as tf
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-import operator
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import Normalizer
-from sklearn.model_selection import GridSearchCV
+from sklearn.tree import DecisionTreeClassifier
+
 
 class Loader:
     """ load raw data and reshape"""
