@@ -1,4 +1,16 @@
-# write your code here
+""" This scripts is used to find an optimal model and its hyper paramteres from a selection of models.
+While having the flexability to support many models, it was tested on the following models:
+    KNeighborsClassifier,     DecisionTreeClassifier,
+    LogisticRegression ,    RandomForestClassifier.
+
+Main Flow:
+It loads training MNIST training data. Fits the models.
+Evaluates the models on the test data. 
+It normalizes the data (since that gave better results).
+Then, it pefroms a grid search to find the optinal model
+
+"""
+
 import tensorflow as tf
 import numpy as np
 import pandas as pd
